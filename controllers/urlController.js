@@ -1,4 +1,4 @@
-const UrlModel = require('../models/url');
+const UrlModel = require('../models/Url');
 const {nanoid} = require('nanoid');
 const QRCode = require('qrcode');
 const AppError = require('../utilities/AppError');
