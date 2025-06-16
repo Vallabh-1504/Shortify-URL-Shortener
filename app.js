@@ -53,8 +53,6 @@ app.use(session(sessionConfig))
 
 app.use(flash());
 
-app.locals.layout = 'layout/boilerplate';
-
 app.use((req, res, next) =>{
     res.locals.userId = req.session.userId || null;
     res.locals.success = req.flash('success');
