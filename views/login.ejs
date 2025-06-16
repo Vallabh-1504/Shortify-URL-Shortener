@@ -1,0 +1,27 @@
+<% layout('layout/boilerplate') %>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center" my-4>Login</h2>
+                <form action="/login" class="validated-form" method="post" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary me-4">Login</button>
+                    </div>
+                    <div class="text-center">
+                        <small>Don't have an account? <a href="/signup" class="text-decoration-none">Sign up</a></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
