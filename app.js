@@ -7,6 +7,11 @@ const flash = require('connect-flash');
 const MongoStore = require('connect-mongo');
 const ejsMate = require('ejs-mate');
 const AppError = require('./utilities/AppError');
+<<<<<<< HEAD
+=======
+const {globalLimiter} = require('./middlewares/rateLimiter');
+
+>>>>>>> 73a8afd (OAuth and rate limiter added)
 
 
 // Routes
@@ -15,7 +20,11 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
+<<<<<<< HEAD
 const secret = process.env.SESSION_SECRET;
+=======
+const secret = process.env.SESSION_SECRET || 'abcd';
+>>>>>>> 73a8afd (OAuth and rate limiter added)
 const PORT = process.env.PORT || 8001;
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/URLshortener"
 
@@ -34,9 +43,18 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+<<<<<<< HEAD
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+=======
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(globalLimiter);
+
+>>>>>>> 73a8afd (OAuth and rate limiter added)
 
 const sessionConfig = {
     secret: secret,

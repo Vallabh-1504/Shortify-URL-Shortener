@@ -1,4 +1,15 @@
 const User = require('../models/User');
+<<<<<<< HEAD
+=======
+const {OAuth2Client} = require('google-auth-library');
+require('dotenv').config();
+
+const oAuth2Client = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URL
+)
+>>>>>>> 73a8afd (OAuth and rate limiter added)
 
 module.exports.renderSignup = (req, res) =>{
     res.render('signup', {title: 'Sign Up'});
@@ -16,8 +27,14 @@ module.exports.signup = async (req, res) =>{
     const user = new User({email, password});
     await user.save();
 
+<<<<<<< HEAD
     req.flash('success', 'Signup successful! Please login.')
     res.redirect('/login');
+=======
+    req.session.userId = user._id;
+    req.flash('success', 'Signup successful!')
+    res.redirect('/urls');
+>>>>>>> 73a8afd (OAuth and rate limiter added)
 };
 
 module.exports.renderLogin = (req, res) =>{
@@ -29,14 +46,30 @@ module.exports.login = async (req, res) =>{
     
     const user = await User.findOne({email});
     if(!user){
+<<<<<<< HEAD
         req.flash('error', 'Invalid email or password.');
         return res.redirect('/login');
     }
+=======
+        req.flash('error', 'Email not registered');
+        return res.redirect('/login');
+    }
+
+    if(!user.password){
+        req.flash('error', 'This account was created via Google login. Please use Google Login.');
+        return res.redirect('/login');
+    }
+
+>>>>>>> 73a8afd (OAuth and rate limiter added)
     const isMatched = await user.comparePassword(password);
     if(!isMatched){
         req.flash('error', 'Invalid email or password.');
         return res.redirect('/login');
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 73a8afd (OAuth and rate limiter added)
     // Save user id in session
     req.session.userId = user._id;
     req.flash('success', 'Logged in successfully!');
@@ -51,4 +84,75 @@ module.exports.logout = (req, res) => {
         // Can't store flash after session destroyed, so send flash as a query param or use temp cookie.
         res.redirect('/login?logout=1');
     })
+<<<<<<< HEAD
 };
+=======
+};
+
+module.exports.logout = (req, res) => {
+    req.flash('success', 'Successfully logged out');
+    req.session.destroy(err =>{
+        if(err) return next(err);
+        // Can't store flash after session destroyed, so send flash as a query param or use temp cookie.
+        res.redirect('/login?logout=1');
+    })
+};
+
+
+module.exports.googleAuth = (req, res) =>{
+    const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const options = new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URL,
+        response_type: "code",
+        scope: "openid email profile",
+        access_type: "offline",
+        prompt: "consent",
+    });
+    res.redirect(`${rootUrl}?${options.toString()}`);
+};
+
+module.exports.googleCallback = async(req, res) =>{
+    const code = req.query.code;
+    if(!code){
+        req.flash('error', 'Google authentication failed');
+        return res.redirect('/login');
+    }
+
+    try{
+        const {tokens} = await oAuth2Client.getToken(code);
+        oAuth2Client.setCredentials(tokens);
+
+        const ticket = await oAuth2Client.verifyIdToken({
+            idToken: tokens.id_token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        let user = await User.findOne({googleId: payload.sub});
+
+        if(!user){
+            user = await User.findOne({email: payload.email});
+            if(user){
+                user.googleId = payload.sub;
+                await user.save();
+            }
+            else{
+                user = await User.create({
+                    email: payload.email,
+                    googleId: payload.sub,
+                });
+            }
+        }
+
+        req.session.userId = user._id;
+        req.flash('success', 'Logged in with Google!');
+        res.redirect('/');
+    }
+    catch(e){
+        req.flash('error', 'Google login failed');
+        res.redirect('/login');
+    }
+}
+>>>>>>> 73a8afd (OAuth and rate limiter added)
