@@ -10,11 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-<<<<<<< HEAD
-        required: true,
-=======
         // required: true, // for OAuth
->>>>>>> 73a8afd (OAuth and rate limiter added)
     },
 });
 

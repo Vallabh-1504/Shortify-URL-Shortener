@@ -1,6 +1,4 @@
 const User = require('../models/User');
-<<<<<<< HEAD
-=======
 const {OAuth2Client} = require('google-auth-library');
 require('dotenv').config();
 
@@ -9,7 +7,6 @@ const oAuth2Client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URL
 )
->>>>>>> 73a8afd (OAuth and rate limiter added)
 
 module.exports.renderSignup = (req, res) =>{
     res.render('signup', {title: 'Sign Up'});
@@ -27,14 +24,9 @@ module.exports.signup = async (req, res) =>{
     const user = new User({email, password});
     await user.save();
 
-<<<<<<< HEAD
-    req.flash('success', 'Signup successful! Please login.')
-    res.redirect('/login');
-=======
     req.session.userId = user._id;
     req.flash('success', 'Signup successful!')
     res.redirect('/urls');
->>>>>>> 73a8afd (OAuth and rate limiter added)
 };
 
 module.exports.renderLogin = (req, res) =>{
@@ -46,11 +38,6 @@ module.exports.login = async (req, res) =>{
     
     const user = await User.findOne({email});
     if(!user){
-<<<<<<< HEAD
-        req.flash('error', 'Invalid email or password.');
-        return res.redirect('/login');
-    }
-=======
         req.flash('error', 'Email not registered');
         return res.redirect('/login');
     }
@@ -60,16 +47,11 @@ module.exports.login = async (req, res) =>{
         return res.redirect('/login');
     }
 
->>>>>>> 73a8afd (OAuth and rate limiter added)
     const isMatched = await user.comparePassword(password);
     if(!isMatched){
         req.flash('error', 'Invalid email or password.');
         return res.redirect('/login');
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 73a8afd (OAuth and rate limiter added)
     // Save user id in session
     req.session.userId = user._id;
     req.flash('success', 'Logged in successfully!');
@@ -84,9 +66,6 @@ module.exports.logout = (req, res) => {
         // Can't store flash after session destroyed, so send flash as a query param or use temp cookie.
         res.redirect('/login?logout=1');
     })
-<<<<<<< HEAD
-};
-=======
 };
 
 module.exports.logout = (req, res) => {
@@ -155,4 +134,3 @@ module.exports.googleCallback = async(req, res) =>{
         res.redirect('/login');
     }
 }
->>>>>>> 73a8afd (OAuth and rate limiter added)
