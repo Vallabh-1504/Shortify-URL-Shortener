@@ -14,8 +14,9 @@ const urlRoutes = require('./routes/urlRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const secret = process.env.SESSION_SECRET || 'abcd';
-const PORT = process.env.PORT || 8001;
-const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/URLshortener"
+const PORT = process.env.PORT || 8000;
+const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/URLshortener";
+const baseUrl = process.env.BASE_URL || "http://localhost:8000";
 
 mongoose.connect(dbUrl);
 const db = mongoose.connection;
@@ -31,6 +32,8 @@ app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.set('trust proxy', 1);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +44,7 @@ app.use(globalLimiter);
 const sessionConfig = {
     secret: secret,
     resave: false,
+    // secure: true,
     saveUninitialized: false,
     store: MongoStore.create({mongoUrl: dbUrl}),
     cookie: {
@@ -48,7 +52,6 @@ const sessionConfig = {
         maxAge: 1000 * 60 * 60 * 24 * 7,
     },
 };
-
 app.use(session(sessionConfig))
 
 app.use(flash());
@@ -59,7 +62,7 @@ app.use((req, res, next) =>{
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
     res.locals.loggedOutMsg = req.query.logout ? 'Successfully logged out' : null;
-    res.locals.baseUrl = process.env.BASE_URL;
+    res.locals.baseUrl = baseUrl,
     next();
 });
 

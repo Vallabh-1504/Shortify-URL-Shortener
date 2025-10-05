@@ -68,16 +68,6 @@ module.exports.logout = (req, res) => {
     })
 };
 
-module.exports.logout = (req, res) => {
-    req.flash('success', 'Successfully logged out');
-    req.session.destroy(err =>{
-        if(err) return next(err);
-        // Can't store flash after session destroyed, so send flash as a query param or use temp cookie.
-        res.redirect('/login?logout=1');
-    })
-};
-
-
 module.exports.googleAuth = (req, res) =>{
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = new URLSearchParams({
@@ -91,7 +81,7 @@ module.exports.googleAuth = (req, res) =>{
     res.redirect(`${rootUrl}?${options.toString()}`);
 };
 
-module.exports.googleCallback = async(req, res) =>{
+module.exports.googleCallback = async(req, res, next) =>{
     const code = req.query.code;
     if(!code){
         req.flash('error', 'Google authentication failed');
@@ -127,10 +117,11 @@ module.exports.googleCallback = async(req, res) =>{
 
         req.session.userId = user._id;
         req.flash('success', 'Logged in with Google!');
-        res.redirect('/');
+        res.redirect('/urls');
     }
     catch(e){
         req.flash('error', 'Google login failed');
+        console.log(e);
         res.redirect('/login');
     }
 }

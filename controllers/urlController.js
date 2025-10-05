@@ -2,7 +2,7 @@ const UrlModel = require('../models/Url');
 const {nanoid} = require('nanoid');
 const QRCode = require('qrcode');
 const AppError = require('../utilities/AppError');
-const baseUrl = process.env.BASE_URL || 'http://localhost:8001';
+const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
 
 module.exports.renderHome = (req, res)=> {
     res.render('index', {title: 'Home'});
