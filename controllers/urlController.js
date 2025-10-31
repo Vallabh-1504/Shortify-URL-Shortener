@@ -3,24 +3,26 @@ const {nanoid} = require('nanoid');
 const QRCode = require('qrcode');
 const AppError = require('../utilities/AppError');
 const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+const {redis, SLUG_SET_KEY} = require('../config/redis');
 
 module.exports.renderHome = (req, res)=> {
     res.render('index', {title: 'Home'});
 }
 
 module.exports.createUrl = async (req, res)=> {
-    if(!req.session.userId){
-        req.flash('info', 'you must be logged to create a short URL');
-        return res.redirect('/login');
-    }
-
     let shortId;
-    // if shortId gets repeated
-    while(true){
-        shortId = nanoid(8);
-        const exists = await UrlModel.findOne({shortId});
 
-        if(!exists) break;
+    shortId = await redis.spop(SLUG_SET_KEY);
+
+    if(!shortId){
+        // fallback
+        console.warn('Slug set empty or redis down. Genrarting on the fly');
+
+        while(true){
+            shortId = nanoid(8);
+            const exists = await UrlModel.findOne({shortId});
+            if(!exists) break;
+        }
     }
 
     const {redirectURL} = req.body;

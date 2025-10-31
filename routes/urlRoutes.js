@@ -9,7 +9,7 @@ const requireLogin = require('../middlewares/requireLogin');
 // app.get- to input url
 router.get('/', url.renderHome);
 
-router.post('/url', validate(urlSchema), catchAsync(url.createUrl));
+router.post('/url', validate(urlSchema), requireLogin,  catchAsync(url.createUrl));
 router.get('/r/:shortId', catchAsync(url.redirectShortUrl));
 router.get('/urls', requireLogin, catchAsync(url.dashboard));
 router.post('/delete/:id', catchAsync(url.deleteUrl));
