@@ -1,0 +1,86 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-5 mb-4">
+            <h2 class="mb-3">URL Details</h2>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <p class="card-text"><strong>Short URL:</strong>
+                        <a href="<%= baseUrl %>/r/<%= url.shortId %>" target="_blank"><%= `${displayBaseUrl}/r/${url.shortId}` %></a>
+                    </p>
+                    <p class="card-text text-truncate"><strong>Original URL:</strong> 
+                        <a href="<%= url.redirectURL %>" target="_blank"><%= url.redirectURL %></a>
+                    </p>
+                    <p class="card-text"><strong>Total Clicks:</strong> <%= url.visitHistory.length %></p>
+                    <p class="card-text"><strong>Expires At:</strong> <%= new Date(url.expiresAt).toLocaleDateString() %></p>
+
+                    <% if(url.qrCode) { %>
+                        <img src="<%= url.qrCode %>" alt="QR Code" class="img-fluid rounded mt-3"/>
+                    <% } %>
+                </div>
+            </div>
+             <a href="/urls" class="btn btn-outline-secondary mt-3">&larr; Back to Dashboard</a>
+        </div>
+
+        <div class="col-md-7">
+            <h2 class="mb-3">Edit URL</h2>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Update Custom ID</h5>
+                    <form action="/url/<%= url._id %>/edit/shortid" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label for="shortId" class="form-label">Custom ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><%= baseUrl %>/r/</span>
+                                <input type="text" class="form-control" id="shortId" name="shortId" value="<%= url.shortId %>" required minlength="4" maxlength="30" pattern="[a-zA-Z0-9]+">
+                            </div>
+                            <div class="invalid-feedback">Must be 4-30 alphanumeric characters.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Custom ID</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Update Redirect URL</h5>
+                    <form action="/url/<%= url._id %>/edit/redirect" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label for="redirectURL" class="form-label">Original URL</label>
+                            <input type="url" class="form-control" id="redirectURL" name="redirectURL" value="<%= url.redirectURL %>" required>
+                            <div class="invalid-feedback">Please enter a valid URL (starting with http:// or https://).</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Redirect URL</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Update Expiry Date</h5>
+                    <form action="/url/<%= url._id %>/edit/expiry" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label for="expiresAt" class="form-label">New Expiry Date</label>
+                            <input type="date" class="form-control" id="expiresAt" name="expiresAt" value="<%= expiryDateFormatted %>" required>
+                             <div class="invalid-feedback">Please select a valid future date.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Expiry</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3 border-danger">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">Danger Zone</h5>
+                    <p>Current click count: <strong><%= url.visitHistory.length %></strong></p>
+                    <form action="/url/<%= url._id %>/reset" method="POST">
+                        <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to reset the click count to 0?')">Reset Click Count</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

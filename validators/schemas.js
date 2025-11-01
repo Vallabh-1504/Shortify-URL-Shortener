@@ -33,7 +33,7 @@ const loginSchema = Joi.object({
     }),
 });
 
-const urlSchema = Joi.object({
+const newUrlSchema = Joi.object({
     redirectURL: Joi.string()
         .uri({ scheme: ['http', 'https'] })
         .required()
@@ -43,4 +43,40 @@ const urlSchema = Joi.object({
         }),
 });
 
-module.exports = {signupSchema, loginSchema, urlSchema};
+const updateRedirectSchema = Joi.object({
+    redirectURL: Joi.string()
+        .uri({ scheme: ['http', 'https'] })
+        .required()
+        .messages({
+            'string.uri': 'Enter a valid URL starting with http/https.',
+            'string.empty': 'URL cannot be empty.',
+        }),
+});
+
+const customShortIdSchema = Joi.object({
+    shortId: Joi.string()
+        .min(4)
+        .max(30)
+        .alphanum() // Ensures it's alphanumeric
+        .required()
+        .messages({
+            'string.empty': 'Custom ID cannot be empty.',
+            'string.min': 'Custom ID must be at least 4 characters long.',
+            'string.max': 'Custom ID must be no more than 30 characters long.',
+            'string.alphanum': 'Custom ID must only contain letters and numbers.',
+        }),
+});
+
+const updateExpirySchema = Joi.object({
+    expiresAt: Joi.date()
+        .min('now') // Ensures the date is in the future
+        .required()
+        .messages({
+            'date.base': 'Please provide a valid date.',
+            'date.min': 'Expiry date must be in the future.',
+            'any.required': 'Expiry date is required.',
+        }),
+});
+
+
+module.exports = {signupSchema, loginSchema, newUrlSchema, updateRedirectSchema,customShortIdSchema, updateExpirySchema};

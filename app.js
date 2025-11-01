@@ -8,6 +8,7 @@ const MongoStore = require('connect-mongo');
 const ejsMate = require('ejs-mate');
 const AppError = require('./utilities/AppError');
 const {globalLimiter} = require('./middlewares/rateLimiter');
+const {scheduleSlugRefill} = require('./queues/slugQueue');
 
 // Routes
 const urlRoutes = require('./routes/urlRoutes');
@@ -23,6 +24,9 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 db.once('open', ()=> {
     console.log('mongoose connected');
+
+    // schedule job on startup
+    scheduleSlugRefill();
 });
 
 const app = express();
@@ -63,6 +67,7 @@ app.use((req, res, next) =>{
     res.locals.info = req.flash('info');
     res.locals.loggedOutMsg = req.query.logout ? 'Successfully logged out' : null;
     res.locals.baseUrl = baseUrl,
+    res.locals.displayBaseUrl = baseUrl.replace(/^https?:\/\//, "");
     next();
 });
 

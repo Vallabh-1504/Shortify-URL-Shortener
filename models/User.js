@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         // required: true, // for OAuth
     },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
+    },
 });
 
 // hashing passwords
