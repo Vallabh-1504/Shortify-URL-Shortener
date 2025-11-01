@@ -6,50 +6,49 @@
             <% allUrls.forEach(url => { %>
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
+                
                         <div class="row g-0">
                             <div class="col-md-8">
                                 <div class="card-body d-flex flex-column justify-content-between h-100">
+                        
                                     <div>
                                         <p class="card-text mb-1"><strong>Short URL:</strong></p>
                                         <p class="card-text mb-1"><a href="<%= baseUrl %>/r/<%= url.shortId %>" target="_blank"><%= `${displayBaseUrl}/r/${url.shortId}` %> </a></p>
-                                        <p class="card-text mb-1"><strong>Original URL:</strong> <%= `${url.redirectURL}` %></p>
+                                        <p class="card-text mb-1 text-truncate"><strong>Original URL:</strong> <%= `${url.redirectURL}` %></p>
                                         <p class="mb-1"><strong>Clicks:</strong> <%= url.visitHistory.length %></p>
+    
                                         <p class="mb-3">
                                             <strong>Expires in: </strong>
-                                            <%= url.isExpired ? 'Expired' : (url.daysLeft + ' days') %>
+                 
+                                            <%= url.isExpired ?
+                                            'Expired' : `${url.daysLeft} days (${new Date(url.expiresAt).toLocaleDateString()})` %>
                                         </p>
                                     </div>
+                  
                                     <div class="d-flex gap-2">
-                                        <!-- <button class="btn btn-sm btn-outline-primary copy-btn">Copy</a> -->
+                                        <a href="/url/<%= url._id %>" class="btn btn-sm btn-outline-primary">Details</a>
+                                  
                                         <form action="/delete/<%= url._id %>" method="POST">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                         </form>
+  
                                     </div>
                                 </div>
                             </div>
+      
                             <div class="col-md-4 d-flex align-items-center justify-content-center p-2">
-                                <% if (url.qrImage) { %>
-                                    <img src="<%= url.qrImage %>" alt="QR Code" class="img-fluid rounded" max=""/>
+                                <% if (url.qrCode) { %>
+                                    <img src="<%= url.qrCode %>" alt="QR Code" class="img-fluid rounded" max=""/>
                                 <% } else { %>
                                     <p class="text-muted">No QR</p>
+                   
                                 <% } %>
                             </div>
                         </div>
                     </div>
+             
                 </div>
             <% }) %>
         </div>
     </div>
 </div>
-<!-- 
-
-<script>
-    document.querySelectorAll('.copy-btn').forEach(btn =>{
-        btn.addEventListener('click', () =>{
-            const text = btn.dataset.url;
-            navigator.clipboard.writeText(text)
-                .then(() => alert('Copied'))
-                .catch(() => alert('Copy failed'))
-        });
-    });
-</script> -->

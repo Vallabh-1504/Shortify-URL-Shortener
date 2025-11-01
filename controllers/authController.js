@@ -18,9 +18,23 @@ module.exports.signup = async (req, res) =>{
     // finding and verifying user
     const existingUser = await User.findOne({email});
     if(existingUser){
-        req.flash('error', 'Email already in use, please Login to continue.');
-        return res.redirect('/login');
+        // case-1
+        if(existingUser.password){
+            req.flash('error', 'Email already in use, please Login to continue.');
+            return res.redirect('/login');
+        }
+        
+        // case-2 user exists via Oauth
+        else{
+            existingUser.password = password;
+            await existingUser.save();
+            req.session.userId = existingUser._id;
+            req.flash('success', 'Password added to your Google account. You can now log in locally!');
+            return res.redirect('/urls');
+        }
     }
+
+    // case-3 new user
     const user = new User({email, password});
     await user.save();
 
@@ -43,7 +57,7 @@ module.exports.login = async (req, res) =>{
     }
 
     if(!user.password){
-        req.flash('error', 'This account was created via Google login. Please use Google Login.');
+        req.flash('error', 'This account was created via Google login. Please use Google Login or set a password via sign up.');
         return res.redirect('/login');
     }
 
