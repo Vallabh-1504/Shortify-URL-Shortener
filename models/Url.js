@@ -13,6 +13,14 @@ const urlSchema = new mongoose.Schema({
     visitHistory: [
         {
             timestamp: { type: Date, default: Date.now}, 
+            ipAddress: {type: String},
+            // userAgent: {type: String},
+            location: {
+                country: {type: String},
+                region: {type: String},
+                city: {type: String},
+                ll: {type: [Number], index: '2d'},
+            }
         },
     ],
     expiresAt:{

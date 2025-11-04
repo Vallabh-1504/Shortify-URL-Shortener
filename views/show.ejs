@@ -1,6 +1,7 @@
 <% layout('layout/boilerplate') %>
 
 <div class="container mt-4">
+    <a href="/urls" class="btn btn-outline-secondary mt-3 mb-3">&larr; Back to Dashboard</a>
     <div class="row">
         <div class="col-md-5 mb-4">
             <h2 class="mb-3">URL Details</h2>
@@ -20,11 +21,8 @@
                     <% } %>
                 </div>
             </div>
-             <a href="/urls" class="btn btn-outline-secondary mt-3">&larr; Back to Dashboard</a>
-        </div>
 
-        <div class="col-md-7">
-            <h2 class="mb-3">Edit URL</h2>
+            <h2 class="mb-3 mt-4">Edit URL</h2>
 
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
@@ -80,7 +78,40 @@
                     </form>
                 </div>
             </div>
+        </div>
 
+        <div class="col-md-7">
+            <h2 class="mb-3">Analytics</h2>
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Click Map</h5>
+                    <div id="map" style="height: 300px; width: 100%; border-radius: 5px;"></div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Top Locations</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>By Country</h6>
+                            <ul class="list-group list-group-flush" id="country-list">
+                                </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>By City</h6>
+                            <ul class="list-group list-group-flush" id="city-list">
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+<script> const urlId = '<%= url._id %>' </script>
+<script src="/map.js" ></script>

@@ -17,6 +17,8 @@ router.get('/urls', requireLogin, catchAsync(url.dashboard));
 
 router.get('/url/:id', requireLogin, catchAsync(url.renderShowPage));
 
+router.get('/url/:id/analytics', requireLogin, catchAsync(url.getAnalytics));
+
 router.post(
     '/url/:id/edit/redirect', 
     requireLogin, 
