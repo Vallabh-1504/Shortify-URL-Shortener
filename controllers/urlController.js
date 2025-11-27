@@ -99,7 +99,7 @@ module.exports.redirectShortUrl = async (req, res)=> {
     const visitData = {
         timestamp: new Date(),
         ipAddress: ip,
-        userAgent: userAgent,
+        // userAgent: userAgent,
         location: geo,
     };
 

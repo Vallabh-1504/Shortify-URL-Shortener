@@ -2,9 +2,10 @@ require('dotenv').config();
 const {Worker} = require('bullmq');
 const {nanoid} = require('nanoid');
 const mongoose = require('mongoose');
-const {redis, SLUG_SET_KEY, redisConnectionOptions} = require('../config/redis');
+const {redis, SLUG_SET_KEY, redisConfig} = require('../config/redis');
 const UrlModel = require('../models/Url');
 const { SLUG_QUEUE_NAME } = require('../queues/slugQueue');
+const IORedis = require('ioredis');
 
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/URLshortener";
 
@@ -59,8 +60,10 @@ const processor = async (job) =>{
 
 console.log('Starting slug worker');
 
+const workerConnection = new IORedis(redisConfig.url, redisConfig.options);
+
 const slugWorker = new Worker(SLUG_QUEUE_NAME, processor, {
-    connection: redisConnectionOptions,
+    connection: workerConnection,
     limiter: {
         max: 5,
         duration: 24 * 60 * 60 * 1000

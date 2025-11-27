@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "concurrently \"node app.js\" \"node workers/slugWorker.js\"",
     "start:worker": "node workers/slugWorker.js",
     "dev": "concurrently \"nodemon app.js\" \"nodemon workers/slugWorker.js\""
   },
