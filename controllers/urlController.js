@@ -71,13 +71,13 @@ module.exports.redirectShortUrl = async (req, res)=> {
     let ip = req.ip;
     // const userAgent = req.headers['user-agent'];
 
-    if(ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.')){
+    if(process.env.NODE_ENV !== 'production'){
         console.log(`Detected local IP (${ip}). Faking public IP`);
         ip = '8.8.8.8';
         // ip = '1.1.1.1';
         // ip = '9.9.9.9';
         // ip = '208.67.222.222';
-    };
+    }
 
     let geo = null;
     try{
