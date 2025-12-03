@@ -69,11 +69,9 @@ const customShortIdSchema = Joi.object({
 
 const updateExpirySchema = Joi.object({
     expiresAt: Joi.date()
-        .min('now') // Ensures the date is in the future
         .required()
         .messages({
             'date.base': 'Please provide a valid date.',
-            'date.min': 'Expiry date must be in the future.',
             'any.required': 'Expiry date is required.',
         }),
 });

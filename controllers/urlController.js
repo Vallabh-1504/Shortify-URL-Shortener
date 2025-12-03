@@ -65,7 +65,7 @@ module.exports.redirectShortUrl = async (req, res)=> {
         throw new AppError('Short URL not found', 404);
     }
     if(entry.expiresAt < new Date()){
-        throw new AppError('This short URL has expired', 410);
+        throw new AppError('This short URL has expired', 404);
     }
 
     let ip = req.ip;
@@ -145,10 +145,18 @@ module.exports.renderShowPage = async (req, res) =>{
     const {id} = req.params;
     const url = await getUrlAndCheckOwner(id, req.session.userId);
 
-    // Format date for <input type="date"> which requires YYYY-MM-DD
+    const difference = url.expiresAt - Date.now();
+    const daysLeft = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+    // formatted date for <input type="date"> which require YYYY-MM-DD
     const expiryDateFormatted = url.expiresAt.toISOString().split('T')[0];
 
-    res.render('show', {title: 'URL Details', url, expiryDateFormatted,});
+    let updatedUrl = {...url.toObject(), 
+        daysLeft : daysLeft >= 0 ? daysLeft : 0,
+        expiryDateFormatted
+    };
+
+    res.render('show', {title: 'URL Details', updatedUrl});
 };
 
 module.exports.updateRedirectUrl = async (req, res) =>{
