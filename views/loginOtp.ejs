@@ -1,0 +1,45 @@
+<% layout('layout/boilerplate') %>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4"><%= step === 'verify' ? 'Verify OTP' : 'Login with OTP' %></h2>
+                
+                <% if(step === 'verify'){ %>
+                    <div class="alert alert-info py-2">Code sent to <strong><%= email %></strong></div>
+                    <form action="/login/verify-otp" class="validated-form" method="post" novalidate>
+                        <input type="hidden" name="email" value="<%= email %>">
+                        <div class="mb-3">
+                            <label class="form-label">Enter 4-digit Code</label>
+                            <input type="text" class="form-control text-center fs-4 letter-spacing-2" name="otp" pattern="[0-9]*" inputmode="numeric" maxlength="6" required autofocus>
+                            <div class="invalid-feedback">Please enter the 4-digit code.</div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">Verify & Login</button>
+                        </div>
+                    </form>
+
+                <% } else{ %>
+                    <form action="/login/send-otp" class="validated-form" method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                            <div class="invalid-feedback">Please provide a valid email.</div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Send OTP Code</button>
+                        </div>
+                    </form>
+                <% } %>
+
+                <hr class="my-4">
+                <div class="text-center">
+                    <a href="/login" class="text-decoration-none">
+                        <i class="fas fa-arrow-left"></i> Back to Password Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

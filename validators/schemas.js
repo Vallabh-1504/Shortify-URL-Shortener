@@ -76,5 +76,35 @@ const updateExpirySchema = Joi.object({
         }),
 });
 
+const otpRequestSchema = Joi.object({
+    email: Joi.string()
+    .email()
+    .required()
+    .messages({
+        'string.email': 'Enter a valid email address.',
+        'string.empty': 'Email is required.',
+    })
+});
 
-module.exports = {signupSchema, loginSchema, newUrlSchema, updateRedirectSchema,customShortIdSchema, updateExpirySchema};
+const otpVerifySchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required(),
+
+    otp: Joi.string()
+        .length(4)
+        .pattern(/^[0-9]+$/)
+        .required()
+        .messages({
+            'string.length': 'OTP must be exactly 4 digits.',
+            'string.pattern.base': 'OTP must contain numbers only.'
+        })
+});
+
+
+module.exports = {
+    signupSchema, loginSchema, 
+    newUrlSchema, updateRedirectSchema,
+    customShortIdSchema, updateExpirySchema,
+    otpRequestSchema, otpVerifySchema,
+};

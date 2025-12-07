@@ -16,6 +16,7 @@
     "axios": "^1.13.1",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.63.0",
+    "concurrently": "^9.2.1",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
@@ -32,7 +33,7 @@
     "joi": "^17.13.3",
     "mongoose": "^8.15.1",
     "nanoid": "^3.3.11",
-    "qrcode": "^1.5.4",
-    "concurrently": "^9.2.1"
+    "nodemailer": "^7.0.11",
+    "qrcode": "^1.5.4"
   }
 }

@@ -1,5 +1,8 @@
 const User = require('../models/User');
 const {OAuth2Client} = require('google-auth-library');
+const {redis} = require('../config/redis');
+const {sendOtpEmail} = require('../utilities/emailSender');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const oAuth2Client = new OAuth2Client(
@@ -57,7 +60,7 @@ module.exports.login = async (req, res) =>{
     }
 
     if(!user.password){
-        req.flash('error', 'This account was created via Google login. Please use Google Login or set a password via sign up.');
+        req.flash('error', 'Account exists but has no password. Log in via Google/OTP, or go to Sign Up to set a password.');
         return res.redirect('/login');
     }
 
@@ -138,4 +141,58 @@ module.exports.googleCallback = async(req, res, next) =>{
         console.log(e);
         res.redirect('/login');
     }
-}
+};
+
+module.exports.renderOtpLogin = (req, res) =>{
+    res.render('loginOtp', {title: 'login with OTP', step: 'request', email: ''});
+};
+
+module.exports.sendOtp = async (req, res) =>{
+    const {email} = req.body;
+    const otp = crypto.randomInt(1000, 9999).toString();
+    await redis.setex(`otp:${email}`, 300, otp);
+
+    // try-catch for specific response
+    try{
+        await sendOtpEmail(email, otp);
+        req.flash('success', 'OTP sent! check your inbox');
+        res.render('loginOtp', {title: 'Verify OTP', step: 'verify', email: email});
+    }
+    catch(err){
+        console.error('Email Error:', err);
+        req.flash('error', 'Failed to send email. Please try again.');
+        res.redirect('/login/otp');
+    }
+};
+
+module.exports.verifyOtp = async (req, res) =>{
+    const {email, otp} = req.body;
+
+    const storedOtp = await redis.get(`otp:${email}`);
+
+    if(!storedOtp){
+        req.flash('error', 'OTP has expired or is invalid.');
+        return res.redirect('/login/otp');
+    }
+
+    if(storedOtp !== otp){
+        req.flash('error', 'Incorrect OTP. please try again.');
+        return res.render('loginOtp', {title: 'Verify OTP', step: 'verify', email: email});
+    }
+
+    await redis.del(`otp:${email}`);
+
+    const user = await User.findOne({email});
+
+    if(!user){
+        user = new User({email: email});
+        await user.save();
+        req.flash('success', 'Account created and logged in!');
+    }
+    else{
+        req.flash('success', 'Welcome back!');
+    }
+
+    req.session.userId = user._id;
+    res.redirect('/urls');
+};
