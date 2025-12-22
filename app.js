@@ -48,9 +48,12 @@ app.use(globalLimiter);
 const sessionConfig = {
     secret: secret,
     resave: false,
-    // secure: true,
+    secure: process.env.NODE_ENV === 'production',
     saveUninitialized: false,
-    store: MongoStore.create({mongoUrl: dbUrl}),
+    store: MongoStore.create({
+        mongoUrl: dbUrl,
+        touchAfter: 24 * 3600, // only update session after 24 hours 
+    }),
     cookie: {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,

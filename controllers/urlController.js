@@ -5,7 +5,7 @@ const AppError = require('../utilities/AppError');
 const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
 const {redis, SLUG_SET_KEY} = require('../config/redis');
 const lookup = require('country-code-lookup');
-const axios = require('axios');
+const {visitQueue} = require('../queues/visitQueue');
 
 
 const getUrlAndCheckOwner = async (urlId, userId) =>{
@@ -59,8 +59,14 @@ module.exports.createUrl = async (req, res)=> {
 };
 
 module.exports.redirectShortUrl = async (req, res)=> {
+    console.time('Total Request Time');
+
     const {shortId} = req.params;
-    const entry = await UrlModel.findOne({shortId});
+
+    // console.time('1. Database Read');
+    const entry = await UrlModel.findOne({shortId}).select('redirectURL expiresAt');
+    // console.timeEnd('1. Database Read');
+
     if(!entry){
         throw new AppError('Short URL not found', 404);
     }
@@ -78,35 +84,21 @@ module.exports.redirectShortUrl = async (req, res)=> {
         // ip = '9.9.9.9';
         // ip = '208.67.222.222';
     }
-
-    let geo = null;
-    try{
-        const response = await axios.get(`http://ip-api.com/json/${ip}`);
-        if(response && response.data.status === 'success'){
-            geo = {
-                country: response.data.country,
-                region: response.data.regionName,
-                city: response.data.city,
-                ll: [response.data.lat, response.data.lon],
-            };
-        }
-    }
-    catch(err){
-        console.error('IP Geolocation API failed', err.message);
-
-    }
-
-    const visitData = {
-        timestamp: new Date(),
-        ipAddress: ip,
+                
+    // console.time('2. Queue Add');
+    visitQueue.add('track-visit', {
+        urlId: entry._id,
+        ip: ip,
         // userAgent: userAgent,
-        location: geo,
-    };
+    });
+    // console.timeEnd('2. Queue Add');
 
-    entry.visitHistory.push(visitData);
-    await entry.save();
+    // console.time('3. Sending Response');
     res.redirect(entry.redirectURL);
-}
+    // console.timeEnd('3. Sending Response');
+    
+    // console.timeEnd('Total Request Time');
+};
 
 module.exports.dashboard = async (req, res)=> {
     const userId = req.session.userId;

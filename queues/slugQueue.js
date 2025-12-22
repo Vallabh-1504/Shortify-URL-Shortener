@@ -14,7 +14,7 @@ const scheduleSlugRefill = async () =>{
     try {
         const jobName = 'refill-slugs';
         const repeatOpts = {
-            every: 24 * 60 * 60 * 1000,
+            every: 24 * 60 * 60 * 1000 * 7,
         };
 
         // remove job with smae name and exact repeat options.

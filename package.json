@@ -4,9 +4,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"node app.js\" \"node workers/slugWorker.js\"",
-    "start:worker": "node workers/slugWorker.js",
-    "dev": "concurrently \"nodemon app.js\" \"nodemon workers/slugWorker.js\""
+    "start": "concurrently \"node app.js\" \"node workers/slugWorker.js\" \"node workers/visitWorker.js\"",
+    "dev": "concurrently \"nodemon app.js\" \"nodemon workers/slugWorker.js\" \"nodemon workers/visitWorker.js\""
   },
   "keywords": [],
   "author": "",
